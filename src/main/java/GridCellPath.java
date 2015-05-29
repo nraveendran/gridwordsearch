@@ -14,7 +14,7 @@ public class GridCellPath {
     private final char[][] globalGridCharsMatrix;
     Queue<GridCellPath> globalGridCellPaths;
 
-    List<CharacterGrid.GridCell> gridCellList = new LinkedList<>();
+    List<GridCell> gridCellList = new LinkedList<GridCell>();
 
     public GridCellPath(Queue<GridCellPath> globalGridCellPaths, Set<String> wordsSet, Dictionary dictionary, char[][] globalGridCharsMatrix) {
 	this.globalGridCellPaths = globalGridCellPaths;
@@ -23,7 +23,7 @@ public class GridCellPath {
 	this.globalGridCharsMatrix = globalGridCharsMatrix;
     }
 
-    public void addCell(CharacterGrid.GridCell gridCell) {
+    public void addCell(GridCell gridCell) {
 	gridCellList.add(gridCell);
     }
 
@@ -34,39 +34,53 @@ public class GridCellPath {
 	}
 
 	if (dictionary.isPrefixForWords(potentialWord)) {
+	    List<GridCell> neighbors = findNeighbors();
 
-	    //Get the last cell in the path
-	    CharacterGrid.GridCell lastGridCellInPath = gridCellList.get(gridCellList.size() - 1);
-	    List<CharacterGrid.GridCell> neighbors = lastGridCellInPath.findNeighbors();
-
-	    //remove cells which are already part of the current path from the neighbors list
-	    neighbors.removeAll(gridCellList);
-
-	    for (CharacterGrid.GridCell neighboringCell : neighbors) {
-		GridCellPath newGridCellPathWithNeighbor = new GridCellPath(globalGridCellPaths, globalWordSet, dictionary, globalGridCharsMatrix);
-		//the new path contains all the cells in the current path
-		newGridCellPathWithNeighbor.addCurrentPath(gridCellList);
-		//the new path contains the neighbor that we found
-		addCell(neighboringCell);
+	    for (GridCell neighboringCell : neighbors) {
+	        GridCellPath newGridCellPathWithNeighbor = createNewGridCellPathWithNeighbor(neighboringCell);
 		//add the new path to the queue for processing
 		globalGridCellPaths.add(newGridCellPathWithNeighbor);
 	    }
 	}
     }
 
-    private void addCurrentPath(List<CharacterGrid.GridCell> gridCellList) {
+    protected List<GridCell> findNeighbors() {
+	//Get the last cell in the path
+	GridCell lastGridCellInPath = getLastGridCell();
+	List<GridCell> neighbors = lastGridCellInPath.findNeighbors();
+
+	//remove cells which are already part of the current path from the neighbors list
+	neighbors.removeAll(gridCellList);
+	return neighbors;
+    }
+
+    protected GridCellPath createNewGridCellPathWithNeighbor(GridCell neighboringCell) {
+	GridCellPath newGridCellPathWithNeighbor = new GridCellPath(globalGridCellPaths, globalWordSet, dictionary, globalGridCharsMatrix);
+	//the new path contains all the cells in the current path
+	newGridCellPathWithNeighbor.addCurrentPath(gridCellList);
+	//the new path contains the neighbor that we found
+        newGridCellPathWithNeighbor.addCell(neighboringCell);
+	return newGridCellPathWithNeighbor;
+    }
+
+    protected GridCell getLastGridCell() {
+	return gridCellList.get(gridCellList.size() - 1);
+    }
+
+    private void addCurrentPath(List<GridCell> gridCellList) {
 	this.gridCellList.addAll(gridCellList);
     }
 
     public String getCharacterSequenceFromPath() {
 
-	char[] charString = new char[gridCellList.size()];
-	for (int i = 0; i < gridCellList.size(); i++) {
-	    CharacterGrid.GridCell gridCell = gridCellList.get(i);
-	    charString[i] = globalGridCharsMatrix[gridCell.getRowNumber()][gridCell.getColumnNumber()];
+        StringBuilder stringBuilder = new StringBuilder();
+
+	for (GridCell gridCell: gridCellList) {
+
+	     stringBuilder.append(globalGridCharsMatrix[gridCell.getRowNumber()][gridCell.getColumnNumber()]);
 	}
 
-	return charString.toString();
+	return stringBuilder.toString();
     }
 }
 
