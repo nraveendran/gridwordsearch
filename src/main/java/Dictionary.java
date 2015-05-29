@@ -4,6 +4,7 @@
 public class Dictionary {
 
     public static final int NUM_LETTERS_IN_ALPHABET = 26;
+    public static final char LOWERCASE_A = 'a';
     Dictionary[] childDictionaries;
     boolean isWord = false;
     private int numberOfChildren;
@@ -74,7 +75,7 @@ public class Dictionary {
 	int wordLength = characterSequence.length();
 	for (int i = 0; i < wordLength; i++) {
 	    char currentCharacter = characterSequence.charAt(i);
-	    int indexOfCurrentCharacter = currentCharacter - 'a';
+	    int indexOfCurrentCharacter = currentCharacter - LOWERCASE_A;
 
 	    validateCharacterIndex(currentCharacter, indexOfCurrentCharacter);
 
@@ -108,7 +109,7 @@ public class Dictionary {
 	    int wordLength = word.length();
 	    for (int i = 0; i < wordLength; i++) {
 		char currentCharacter = word.charAt(i);
-		int indexOfCurrentCharacter = currentCharacter - 'a';
+		int indexOfCurrentCharacter = currentCharacter - LOWERCASE_A;
 
 		validateCharacterIndex(currentCharacter, indexOfCurrentCharacter);
 
