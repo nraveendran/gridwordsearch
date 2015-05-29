@@ -14,7 +14,7 @@ public class DictionaryTest {
 	assertFalse(dictionary.contains("noexisting"));
     }
 
-    @Test public void testCreateDefaultTrieDictionary() throws Exception {
+    @Test public void testCreateDefaultDictionary() throws Exception {
 	Dictionary dictionary = new Dictionary();
 	assertEquals(dictionary.getChildDictionaries().length, 26);
 
@@ -62,7 +62,26 @@ public class DictionaryTest {
         Dictionary thirdLevelDictionary = secondLevelDictionary.getChildDictionaries()[6];
 
         assertNotNull(thirdLevelDictionary);
-        assertTrue(secondLevelDictionary.isWord());
+        assertTrue(thirdLevelDictionary.isWord());
+
+    }
+
+    @Test public void testAddExistingWord() {
+
+	Dictionary dictionary = new Dictionary();
+
+	dictionary.addWord("dogged");
+
+	Dictionary firstLevelDictionary = dictionary.getChildDictionaries()[3];
+	Dictionary secondLevelDictionary = firstLevelDictionary.getChildDictionaries()[14];
+	Dictionary thirdLevelDictionary = secondLevelDictionary.getChildDictionaries()[6];
+
+
+	assertFalse(thirdLevelDictionary.isWord());
+
+        dictionary.addWord("dog");
+
+        assertTrue(thirdLevelDictionary.isWord());
 
     }
 

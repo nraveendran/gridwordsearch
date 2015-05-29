@@ -46,12 +46,11 @@ public class Dictionary {
 	            currentDictionary.childDictionaries[indexOfCurrentCharacter] = childDictionaryAtIndex;
 		}
 
-	        if (i==wordLength-1){
-	            childDictionaryAtIndex.setWord(true);
-	        }
-
 	        currentDictionary = childDictionaryAtIndex;
 	    }
+
+		currentDictionary.setWord(true);
+
 	}
     }
 
