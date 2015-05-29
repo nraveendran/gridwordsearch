@@ -8,11 +8,7 @@ public class DictionaryTest {
 
     }
 
-    @Test public void findWordInEmptyDictionary() {
 
-	Dictionary dictionary = new Dictionary();
-	assertFalse(dictionary.contains("noexisting"));
-    }
 
     @Test public void testCreateDefaultDictionary() throws Exception {
 	Dictionary dictionary = new Dictionary();
@@ -66,6 +62,26 @@ public class DictionaryTest {
 
     }
 
+
+    @Test public void testWordsWithCommonPrefix() {
+
+	Dictionary dictionary = new Dictionary();
+
+	dictionary.addWord("ants");
+	dictionary.addWord("and");
+
+	Dictionary firstLevelDictionary = dictionary.getChildDictionaries()[0];
+	Dictionary secondLevelDictionary = firstLevelDictionary.getChildDictionaries()[13];
+	Dictionary thirdLevelDictionaryForAnd = secondLevelDictionary.getChildDictionaries()[3];
+
+	assertTrue(thirdLevelDictionaryForAnd.isWord());
+
+	Dictionary thirdLevelDictionaryForAnt = secondLevelDictionary.getChildDictionaries()[19];
+	assertFalse(thirdLevelDictionaryForAnt.isWord());
+	Dictionary fourthLevelDictionaryForAnt = thirdLevelDictionaryForAnt.getChildDictionaries()[18];
+	assertTrue(fourthLevelDictionaryForAnt.isWord());
+    }
+
     @Test public void testAddExistingWord() {
 
 	Dictionary dictionary = new Dictionary();
@@ -85,11 +101,77 @@ public class DictionaryTest {
 
     }
 
-    @Test public void findWordInDictionary() {
+    @Test public void testNumberOfChildren() {
 
 	Dictionary dictionary = new Dictionary();
-	dictionary.addWord("aardvark");
-	assertTrue(dictionary.contains("aardvark"));
+
+	dictionary.addWord("abac");
+        dictionary.addWord("abstract");
+        dictionary.addWord("accent");
+	dictionary.addWord("ad");
+
+	Dictionary firstLevelDictionary = dictionary.getChildDictionaries()[0];
+        assertEquals(firstLevelDictionary.getNumberOfChildren(),3);
+
+    }
+
+    @Test public void testNumberOfChildrenAtEachSuffix() {
+
+	Dictionary dictionary = new Dictionary();
+
+	dictionary.addWord("ants");
+	dictionary.addWord("and");
+
+	Dictionary firstLevelDictionary = dictionary.getChildDictionaries()[0];
+        assertEquals(firstLevelDictionary.getNumberOfChildren(), 1);
+
+	Dictionary secondLevelDictionary = firstLevelDictionary.getChildDictionaries()[13];
+        assertEquals(secondLevelDictionary.getNumberOfChildren(), 2);
+
+	Dictionary thirdLevelDictionaryForAnd = secondLevelDictionary.getChildDictionaries()[3];
+        assertEquals(thirdLevelDictionaryForAnd.getNumberOfChildren(), 0);
+
+	Dictionary thirdLevelDictionaryForAnt = secondLevelDictionary.getChildDictionaries()[19];
+	assertEquals(thirdLevelDictionaryForAnt.getNumberOfChildren(), 1);
+	Dictionary fourthLevelDictionaryForAnt = thirdLevelDictionaryForAnt.getChildDictionaries()[18];
+	assertEquals(fourthLevelDictionaryForAnt.getNumberOfChildren(), 0);
+    }
+
+    @Test public void testFindWordInEmptyDictionary() {
+
+	Dictionary dictionary = new Dictionary();
+	assertFalse(dictionary.containsWord("noexisting"));
+    }
+
+    @Test public void testFindEmptyWord() {
+
+	Dictionary dictionary = new Dictionary();
+        dictionary.addWord("administrationist");
+        assertFalse(dictionary.containsWord(""));
+    }
+
+    @Test public void testFindWordInDictionary() {
+
+	Dictionary dictionary = new Dictionary();
+	dictionary.addWord("administrationist");
+	assertTrue(dictionary.containsWord("administrationist"));
+        assertFalse(dictionary.containsWord("admin"));
+        assertFalse(dictionary.containsWord("zzzz"));
+        dictionary.addWord("admin");
+        assertTrue(dictionary.containsWord("admin"));
+    }
+
+    @Test public void testIsWordPrefix() {
+
+	Dictionary dictionary = new Dictionary();
+	dictionary.addWord("administrationist");
+        dictionary.addWord("administration");
+	assertTrue(dictionary.isPrefixForWords("admini"));
+	assertTrue(dictionary.isPrefixForWords("administration"));
+	assertTrue(dictionary.isPrefixForWords("administrationis"));
+        assertFalse(dictionary.isPrefixForWords("administrationist"));
+        assertFalse(dictionary.isPrefixForWords("admina"));
+        assertFalse(dictionary.isPrefixForWords("administratione"));
     }
 
     @org.junit.After public void tearDown() throws Exception {
