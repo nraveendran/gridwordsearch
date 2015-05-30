@@ -8,7 +8,7 @@ import java.util.Queue;
 import java.util.Set;
 
 /**
- * Created by nidhish on 5/29/15.
+ * A path made of GridCells. This path could be a potential word which could be checked against the dictionary
  */
 public class GridCellPath {
 
@@ -33,6 +33,11 @@ public class GridCellPath {
 	gridCellList.add(gridCell);
     }
 
+    /**
+     * Match current grid cell path against the dictionary
+     * if the current grid cellpath is a word, its added to a global word set
+     * if the current path is a prefix to a word, new paths are generated
+     */
     public void matchAndGenerateNewPaths() {
 	String potentialWord = getCharacterSequenceFromPath();
 	if (dictionary.containsWord(potentialWord)) {
@@ -44,6 +49,9 @@ public class GridCellPath {
 	}
     }
 
+    /**
+     * Looks at all the neighbors of the last cell in this path and form new paths which can be submitted for evaluation.
+     */
     protected void generateNewPaths() {
 	List<GridCell> neighbors = findNeighbors();
 
@@ -54,6 +62,10 @@ public class GridCellPath {
 	}
     }
 
+    /**
+     *
+     * @return all neighbors of this path
+     */
     protected List<GridCell> findNeighbors() {
 	//Get the last cell in the path
 	GridCell lastGridCellInPath = getLastGridCell();
@@ -64,6 +76,11 @@ public class GridCellPath {
 	return neighbors;
     }
 
+    /**
+     * Takes a neighboringCell and forms new paths
+     * @param neighboringCell
+     * @return
+     */
     protected GridCellPath createNewGridCellPathWithNeighbor(GridCell neighboringCell) {
 	GridCellPath newGridCellPathWithNeighbor = new GridCellPath(globalGridCellPaths, globalWordSet, dictionary, globalGridCharsMatrix);
 	//the new path contains all the cells in the current path
@@ -81,6 +98,10 @@ public class GridCellPath {
 	this.gridCellList.addAll(gridCellList);
     }
 
+    /**
+     *
+     * @return the String that the cell path represents
+     */
     public String getCharacterSequenceFromPath() {
 
         StringBuilder stringBuilder = new StringBuilder();

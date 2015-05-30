@@ -25,8 +25,12 @@ public class GridCell {
 	return columnNumber;
     }
 
+    /**
+     * Find all Possible neighbors
+     * @return
+     */
     public List<GridCell> findNeighbors() {
-        // Possible neighbors are up/down/left/right/ur/ul/dr/dl from this cell
+
         List<GridCell> neighbors = new ArrayList<>();
 
         boolean up, down, right, left;

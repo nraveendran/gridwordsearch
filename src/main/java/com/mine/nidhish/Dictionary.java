@@ -1,7 +1,7 @@
 package com.mine.nidhish;
 
 /**
- * Created by nidhish on 5/28/15.
+ * A dictionary based on Trie datastructure
  */
 public class Dictionary {
 
@@ -11,15 +11,15 @@ public class Dictionary {
     boolean isWord = false;
     private int numberOfChildren;
 
-    /*
-    provide ability to have a bigger symbol set starting with 'a'
+    /**
+     * provide ability to have a bigger symbol set starting with 'a'
      */
     public Dictionary() {
 	childDictionaries = new Dictionary[NUM_LETTERS_IN_ALPHABET];
     }
 
     /**
-      Check if a word is present in Dictionary
+     * Check if a word is present in Dictionary
      */
     public boolean containsWord(String wordToFind) {
 	if (wordToFind == null || "".equals(wordToFind)) {
@@ -28,8 +28,8 @@ public class Dictionary {
 
 	Dictionary lastReachableDictionary = getLastReachableDictionary(wordToFind);
 
-        //if the sequence was not found in the dictionary, it means the word is not found
-        // if the sequence was found but it was not marked as a word, it mean the sequence found was a mere prefix of another word
+	//if the sequence was not found in the dictionary, it means the word is not found
+	// if the sequence was found but it was not marked as a word, it mean the sequence found was a mere prefix of another word
 	if (lastReachableDictionary != null && lastReachableDictionary.isWord()) {
 	    return true;
 	}
@@ -38,38 +38,40 @@ public class Dictionary {
     }
 
     /**
-     Check if a word is a prefix for other words.
-     @param characterSequence the characterSequence to be checked
-     @return true if the characterSequence is a prefix for other words else returns false
+     * Check if a word is a prefix for other words.
+     *
+     * @param characterSequence the characterSequence to be checked
+     * @return true if the characterSequence is a prefix for other words else returns false
      */
     public boolean isPrefixForWords(String characterSequence) {
 
-        if (characterSequence == null || "".equals(characterSequence)) {
+	if (characterSequence == null || "".equals(characterSequence)) {
 	    return false;
-        }
+	}
 
-        Dictionary lastReachableDictionary = getLastReachableDictionary(characterSequence);
+	Dictionary lastReachableDictionary = getLastReachableDictionary(characterSequence);
 
-        //if the sequence was not found in the dictionary, it means the word is not found
-        // if the sequence was found and it has children, it means this character sequence is a prefix of other words
-        if (lastReachableDictionary != null && lastReachableDictionary.hasChildren()) {
+	//if the sequence was not found in the dictionary, it means the word is not found
+	// if the sequence was found and it has children, it means this character sequence is a prefix of other words
+	if (lastReachableDictionary != null && lastReachableDictionary.hasChildren()) {
 	    return true;
-        }
+	}
 
-        return false;
+	return false;
 
     }
 
     private boolean hasChildren() {
-        return this.getNumberOfChildren()>0;
+	return this.getNumberOfChildren() > 0;
     }
 
     /**
-       Walks through a sequence of characters making sure that the dictionary levels can be followed till the last character of sequence. If a character can't be followed, immediately returns null
-       @param characterSequence the sequence of characters to find in the dictionary
-       @return null if the characterSequence can't be found
-               the node for the last character of the sequence if the sequence is found
-     **/
+     * Walks through a sequence of characters making sure that the dictionary levels can be followed till the last character of sequence. If a character can't be followed, immediately returns null
+     *
+     * @param characterSequence the sequence of characters to find in the dictionary
+     * @return null if the characterSequence can't be found
+     * the node for the last character of the sequence if the sequence is found
+     */
     private Dictionary getLastReachableDictionary(String characterSequence) {
 	Dictionary currentDictionary = this;
 
@@ -98,8 +100,8 @@ public class Dictionary {
 	}
     }
 
-    /*
-     Add a word to the dictionary
+    /**
+     * Add a word to the dictionary
      */
     public void addWord(String word) {
 

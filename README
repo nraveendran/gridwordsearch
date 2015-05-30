@@ -38,7 +38,9 @@ I started working on a multi-threaded approach but due to time constraints, I do
 Performance test
 ----------------
 
-I have included a performance test which generates a 1 million element grid (1000 * 1000). The serial algorithm I have is able to find words in 52 seconds.
+The sample set runs under 1s in my machine
+
+I have included a performance test which generates a 1 million element grid (1000 * 1000). The serial algorithm I have is able to find words in 52 seconds in my machine.
 I believe performance should improve with a multi-threaded approach.
 
 
@@ -46,7 +48,6 @@ The performance test can be run by
 
 mvn exec:java -Dexec.mainClass="com.mine.nidhish.GridPerformanceTest"
 
-The sample set runs under 1s.
 
 
 
