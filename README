@@ -1,0 +1,7 @@
+The files (englishwords.txt and grid.txt) which came with the problem is checked in with the source code. Running the following will use these files to generate output
+
+mvn exec:java -Dexec.mainClass="com.mine.nidhish.GridRunner"
+
+In order to specify external input files, please pass two system properties as specified below
+
+mvn exec:java -Dexec.mainClass="com.mine.nidhish.GridRunner" -DdictionaryFile=/home/nidhish/Downloads/englishwords.txt -DgridFile=/home/nidhish/Downloads/grid.txt
