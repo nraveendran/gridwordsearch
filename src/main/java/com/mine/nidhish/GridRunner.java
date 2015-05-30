@@ -1,6 +1,7 @@
 package com.mine.nidhish;
 
 import java.io.BufferedReader;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.nio.file.Files;
@@ -13,32 +14,53 @@ import java.util.Set;
  */
 public class GridRunner {
 
+    private final InputStream dictionaryStream;
+    private final InputStream gridStream;
     private Dictionary dictionary;
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws IOException {
 
-	GridRunner gridRunner = new GridRunner();
+        InputStream dictionaryStream = getInputStreamForDictionary();
+        InputStream gridStream =  getInputStreamForGrid();
+	GridRunner gridRunner = new GridRunner(dictionaryStream,gridStream);
+	gridRunner.computeWords();
+    }
+
+    private static InputStream getInputStreamForGrid() throws IOException {
+	InputStream in;
+	if (System.getProperty("gridFile") != null) {
+	    String gridFileName = System.getProperty("gridFile");
+	    Path path = Paths.get(gridFileName);
+	    in = Files.newInputStream(path);
+	} else {
+	    in = GridRunner.class.getClassLoader().getResourceAsStream("grid.txt");
+	}
+	return in;
+    }
+
+    public GridRunner(InputStream dictionaryStream, InputStream gridStream) {
+
+        this.dictionaryStream = dictionaryStream;
+        this.gridStream = gridStream;
 
     }
 
-    public GridRunner() {
+    public void computeWords(){
+        //        System.out.println("Starting Grid Scanning ");
+        //        long startTime = System.currentTimeMillis();
 
-	//        System.out.println("Starting Grid Scanning ");
-	//        long startTime = System.currentTimeMillis();
+        loadDictionary();
 
-	loadDictionary();
+        CharacterGrid characterGrid = readCharacterGrid();
 
-	CharacterGrid characterGrid = readCharacterGrid();
+        Set<String> wordSet = characterGrid.findWordMatchingDictionary(dictionary);
 
-	Set<String> wordSet = characterGrid.findWordMatchingDictionary(dictionary);
-
-	System.out.println(wordSet.size());
-	for (String word : wordSet) {
+        System.out.println(wordSet.size());
+        for (String word : wordSet) {
 	    System.out.println(word);
-	}
+        }
 
-	//        System.out.println("Finish scanning character grid in " + (System.currentTimeMillis() - startTime) + " ms");
-
+        //        System.out.println("Finish scanning character grid in " + (System.currentTimeMillis() - startTime) + " ms");
     }
 
     private CharacterGrid readCharacterGrid() {
@@ -48,17 +70,8 @@ public class GridRunner {
 	long startTime = System.currentTimeMillis();
 
 	try {
-	    InputStream in;
 
-	    if (System.getProperty("gridFile") != null) {
-		String gridFileName = System.getProperty("gridFile");
-		Path path = Paths.get(gridFileName);
-		in = Files.newInputStream(path);
-	    } else {
-		in = this.getClass().getClassLoader().getResourceAsStream("grid.txt");
-	    }
-
-	    BufferedReader br = new BufferedReader(new InputStreamReader(in));
+	    BufferedReader br = new BufferedReader(new InputStreamReader(gridStream));
 
 	    int numberOfRows;
 	    int numberOfColumns;
@@ -106,23 +119,13 @@ public class GridRunner {
 
     }
 
+
+
     private void loadDictionary() {
 	try {
 	    dictionary = new Dictionary();
 
-	    String dictionaryFileName = "";
-
-	    InputStream in;
-
-	    if (System.getProperty("dictionaryFile") != null) {
-		dictionaryFileName = System.getProperty("dictionaryFile");
-		Path path = Paths.get(dictionaryFileName);
-		in = Files.newInputStream(path);
-	    } else {
-		in = this.getClass().getClassLoader().getResourceAsStream("englishwords.txt");
-	    }
-
-	    BufferedReader br = new BufferedReader(new InputStreamReader(in));
+	    BufferedReader br = new BufferedReader(new InputStreamReader(dictionaryStream));
 
 	    String word;
 
@@ -140,6 +143,19 @@ public class GridRunner {
 	}
 
 	//	System.out.println("Loaded dictionary in " + (System.currentTimeMillis() - startTime) + " milliseconds");
+    }
+
+    private static InputStream getInputStreamForDictionary() throws IOException {
+	String dictionaryFileName;
+	InputStream in;
+	if (System.getProperty("dictionaryFile") != null) {
+		dictionaryFileName = System.getProperty("dictionaryFile");
+		Path path = Paths.get(dictionaryFileName);
+		in = Files.newInputStream(path);
+	} else {
+		in = GridRunner.class.getClassLoader().getResourceAsStream("englishwords.txt");
+	}
+	return in;
     }
 
 }

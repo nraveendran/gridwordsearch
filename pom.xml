@@ -8,6 +8,10 @@
     <artifactId>GridWordSearch</artifactId>
     <version>1.0-SNAPSHOT</version>
 
+    <properties>
+        <skipTests>false</skipTests>
+    </properties>
+
     <dependencies>
         <dependency>
             <groupId>junit</groupId>
