@@ -26,5 +26,8 @@
         <module name="gridwordsearch" />
       </profile>
     </annotationProcessing>
+    <bytecodeTargetLevel>
+      <module name="gridwordsearch" target="1.7" />
+    </bytecodeTargetLevel>
   </component>
 </project>
