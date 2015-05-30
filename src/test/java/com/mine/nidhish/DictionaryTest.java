@@ -1,3 +1,6 @@
+package com.mine.nidhish;
+
+import org.junit.Assert;
 import org.junit.Test;
 
 import static org.junit.Assert.*;
@@ -12,7 +15,7 @@ public class DictionaryTest {
 
     @Test public void testCreateDefaultDictionary() throws Exception {
 	Dictionary dictionary = new Dictionary();
-	assertEquals(dictionary.getChildDictionaries().length, 26);
+	Assert.assertEquals(dictionary.getChildDictionaries().length, 26);
 
     }
 
@@ -111,7 +114,7 @@ public class DictionaryTest {
 	dictionary.addWord("ad");
 
 	Dictionary firstLevelDictionary = dictionary.getChildDictionaries()[0];
-        assertEquals(firstLevelDictionary.getNumberOfChildren(),3);
+        Assert.assertEquals(firstLevelDictionary.getNumberOfChildren(), 3);
 
     }
 
@@ -123,18 +126,18 @@ public class DictionaryTest {
 	dictionary.addWord("and");
 
 	Dictionary firstLevelDictionary = dictionary.getChildDictionaries()[0];
-        assertEquals(firstLevelDictionary.getNumberOfChildren(), 1);
+        Assert.assertEquals(firstLevelDictionary.getNumberOfChildren(), 1);
 
 	Dictionary secondLevelDictionary = firstLevelDictionary.getChildDictionaries()[13];
-        assertEquals(secondLevelDictionary.getNumberOfChildren(), 2);
+        Assert.assertEquals(secondLevelDictionary.getNumberOfChildren(), 2);
 
 	Dictionary thirdLevelDictionaryForAnd = secondLevelDictionary.getChildDictionaries()[3];
-        assertEquals(thirdLevelDictionaryForAnd.getNumberOfChildren(), 0);
+        Assert.assertEquals(thirdLevelDictionaryForAnd.getNumberOfChildren(), 0);
 
 	Dictionary thirdLevelDictionaryForAnt = secondLevelDictionary.getChildDictionaries()[19];
-	assertEquals(thirdLevelDictionaryForAnt.getNumberOfChildren(), 1);
+	Assert.assertEquals(thirdLevelDictionaryForAnt.getNumberOfChildren(), 1);
 	Dictionary fourthLevelDictionaryForAnt = thirdLevelDictionaryForAnt.getChildDictionaries()[18];
-	assertEquals(fourthLevelDictionaryForAnt.getNumberOfChildren(), 0);
+	Assert.assertEquals(fourthLevelDictionaryForAnt.getNumberOfChildren(), 0);
     }
 
     @Test public void testFindWordInEmptyDictionary() {

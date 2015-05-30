@@ -1,3 +1,6 @@
+package com.mine.nidhish;
+
+import org.junit.Assert;
 import org.junit.Test;
 
 import java.util.Set;
@@ -11,8 +14,8 @@ public class CharacterGridTest {
 
 	char[] wordChars = { 'A', 'B', 'C', 'D', 'E', 'F' };
 	CharacterGrid characterGrid = new CharacterGrid(2, 3, wordChars);
-	assertEquals(characterGrid.getNumberOfRows(), 2);
-	assertEquals(characterGrid.getNumberOfColumns(), 3);
+	Assert.assertEquals(characterGrid.getNumberOfRows(), 2);
+	Assert.assertEquals(characterGrid.getNumberOfColumns(), 3);
     }
 
     @Test public void testInvalidWordGrid() {
@@ -62,14 +65,48 @@ public class CharacterGridTest {
 	assertEquals(wordSet.toArray()[0],"ab");
     }
 
-//    @Test public void testGetAllWordsFromGrid() {
-//	char[] wordChars = { 'A', 'N', 'T','S'};
-//        Dictionary dictionary = new Dictionary();
-//        dictionary.addWord("ant");
-//        dictionary.addWord("tan");
-//        
-//	CharacterGrid characterGrid = new CharacterGrid(2, 2, wordChars);
-//        
-//        Set wordSet = characterGrid.findWordMatchingDictionary(dictionary);
-//    }
+    @Test public void test4x4Grid() {
+
+        char[] wordChars = { 'A', 'A', 'Q', 'U', 'I', 'D','F','U','D','L','G','Y','L','M','K','X' };
+
+        CharacterGrid characterGrid = new CharacterGrid(4, 4, wordChars);
+
+
+        String[] words = {"ad","add","aid","ail","did","dill"};
+
+        Dictionary dictionary = new Dictionary();
+        for (String word:words) {
+            dictionary.addWord(word);
+        }
+
+	Set<String> wordSet = characterGrid.findWordMatchingDictionary(dictionary);
+	assertEquals(wordSet.size(),6);
+
+        int index =0;
+        for (String word: wordSet){
+            assertEquals(word,words[index]);
+            index++;
+        }
+
+    }
+
+    @Test public void test4x4GridWithMoreInDictionary() {
+
+	char[] wordChars = { 'A', 'A', 'Q', 'U', 'I', 'D','F','U','D','L','G','Y','L','M','K','X' };
+
+	CharacterGrid characterGrid = new CharacterGrid(4, 4, wordChars);
+
+
+	String[] words = {"ab","ac","ad","add","aid","aide","ail","did","dido","dill","emacs"};
+
+	Dictionary dictionary = new Dictionary();
+	for (String word:words) {
+	    dictionary.addWord(word);
+	}
+
+	Set<String> wordSet = characterGrid.findWordMatchingDictionary(dictionary);
+	assertEquals(wordSet.size(),6);
+
+    }
+
 }

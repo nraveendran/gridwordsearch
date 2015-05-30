@@ -1,3 +1,6 @@
+package com.mine.nidhish;
+
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -15,24 +18,7 @@ public class GridCellPathTest {
 	dictionary = new Dictionary();
     }
 
-    @Test public void testMatchAndGenerateNewPaths() throws Exception {
-	char[] wordChars = { 'A', 'B' };
 
-	dictionary.addWord("ab");
-
-	CharacterGrid characterGrid = new CharacterGrid(1, 2, wordChars);
-
-	Queue<GridCellPath> globalGridCellPaths = new LinkedList<>();
-	Set<String> globalWordSet = new HashSet<>();
-
-	GridCellPath gridCellPath = new GridCellPath(globalGridCellPaths, globalWordSet, dictionary, characterGrid.getGridCharsMatrix());
-	//        CharacterGrid.GridCell
-
-	gridCellPath.matchAndGenerateNewPaths();
-
-	assertEquals(globalWordSet.toArray()[0], "ab");
-
-    }
 
     @Test public void testGetCharacterSequenceFromPath() throws Exception {
 
@@ -48,17 +34,17 @@ public class GridCellPathTest {
 
 	gridCellPath.addCell(gridCell);
 
-	assertEquals(gridCellPath.getCharacterSequenceFromPath(), "a");
+	Assert.assertEquals(gridCellPath.getCharacterSequenceFromPath(), "a");
 
 	GridCell gridCell1 = new GridCell(characterGrid, 0, 1);
 	gridCellPath.addCell(gridCell1);
 
-	assertEquals(gridCellPath.getCharacterSequenceFromPath(), "ab");
+	Assert.assertEquals(gridCellPath.getCharacterSequenceFromPath(), "ab");
 
 	GridCell gridCell2 = new GridCell(characterGrid, 1, 1);
 	gridCellPath.addCell(gridCell2);
 
-	assertEquals(gridCellPath.getCharacterSequenceFromPath(), "abd");
+	Assert.assertEquals(gridCellPath.getCharacterSequenceFromPath(), "abd");
 
     }
 
@@ -80,7 +66,7 @@ public class GridCellPathTest {
 
 	GridCell expectedGridCell = new GridCell(characterGrid, 1, 1);
 
-	assertEquals(gridCellPath.getLastGridCell(), expectedGridCell);
+	Assert.assertEquals(gridCellPath.getLastGridCell(), expectedGridCell);
 
     }
 
@@ -104,7 +90,7 @@ public class GridCellPathTest {
 	GridCell neighborToAppend = new GridCell(characterGrid, 1, 2);
 	GridCellPath newGridCellPath = gridCellPath.createNewGridCellPathWithNeighbor(neighborToAppend);
 
-	assertEquals(newGridCellPath.getLastGridCell(), neighborToAppend);
+	Assert.assertEquals(newGridCellPath.getLastGridCell(), neighborToAppend);
 
     }
 
@@ -128,7 +114,7 @@ public class GridCellPathTest {
 	GridCell neighborToAppend = new GridCell(characterGrid, 0, 1);
 	GridCellPath newGridCellPath = gridCellPath.createNewGridCellPathWithNeighbor(neighborToAppend);
 
-	assertEquals(newGridCellPath.getLastGridCell(), neighborToAppend);
+	Assert.assertEquals(newGridCellPath.getLastGridCell(), neighborToAppend);
 
     }
 
@@ -146,9 +132,6 @@ public class GridCellPathTest {
 	GridCell gridCell_2_0 = new GridCell(characterGrid, 2, 0);
 	GridCell gridCell_2_1 = new GridCell(characterGrid, 2, 1);
 	GridCell gridCell_2_2 = new GridCell(characterGrid, 2, 2);
-
-
-
 
 
         Queue<GridCellPath> globalGridCellPaths = new LinkedList<>();
@@ -189,7 +172,70 @@ public class GridCellPathTest {
         neighborList = gridCellPath.findNeighbors();
 
         assertTrue(neighborList.size()==0);
+    }
 
+
+    @Test public void testExactPathMatchWithDictionary() throws Exception {
+	char[] wordChars = { 'A', 'A', 'Q', 'U', 'I', 'D','F','U','D','L','G','Y','L','M','K','X' };
+
+        dictionary.addWord("aa");
+
+	CharacterGrid characterGrid = new CharacterGrid(4, 4, wordChars);
+
+	GridCell gridCell_0_0 = new GridCell(characterGrid, 0, 0);
+	GridCell gridCell_0_1 = new GridCell(characterGrid, 0, 1);
+
+
+	Queue<GridCellPath> globalGridCellPaths = new LinkedList<>();
+	Set<String> globalWordSet = new HashSet<>();
+
+	GridCellPath gridCellPath = new GridCellPath(globalGridCellPaths, globalWordSet, dictionary, characterGrid.getGridCharsMatrix());
+	gridCellPath.addCell(gridCell_0_0);
+	gridCellPath.addCell(gridCell_0_1);
+
+
+        gridCellPath.matchAndGenerateNewPaths();
+
+        assertEquals(globalWordSet.toArray()[0],"aa");
 
     }
+
+
+
+    @Test public void testPrefixBasedPathGeneration() throws Exception {
+
+        char[] wordChars = { 'A', 'A', 'Q', 'U', 'I', 'D','F','U','D','L','G','Y','L','M','K','X' };
+
+        dictionary.addWord("aa");
+
+        CharacterGrid characterGrid = new CharacterGrid(4, 4, wordChars);
+
+        GridCell gridCell_0_0 = new GridCell(characterGrid, 0, 0);
+        GridCell gridCell_0_1 = new GridCell(characterGrid, 0, 1);
+
+
+	Queue<GridCellPath> globalGridCellPaths = new LinkedList<>();
+	Set<String> globalWordSet = new HashSet<>();
+
+	GridCellPath gridCellPath = new GridCellPath(globalGridCellPaths, globalWordSet, dictionary, characterGrid.getGridCharsMatrix());
+	gridCellPath.addCell(gridCell_0_0);
+        gridCellPath.addCell(gridCell_0_1);
+
+
+	gridCellPath.matchAndGenerateNewPaths();
+
+	assertEquals(globalGridCellPaths.size(),0);
+
+        globalGridCellPaths = new LinkedList<>();
+        dictionary.addWord("aad");
+        gridCellPath = new GridCellPath(globalGridCellPaths, globalWordSet, dictionary, characterGrid.getGridCharsMatrix());
+        gridCellPath.addCell(gridCell_0_0);
+        gridCellPath.addCell(gridCell_0_1);
+
+        gridCellPath.matchAndGenerateNewPaths();
+        assertEquals(globalGridCellPaths.size(),4);
+
+    }
+
+
 }

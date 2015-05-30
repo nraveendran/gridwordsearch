@@ -1,3 +1,7 @@
+package com.mine.nidhish;
+
+import com.mine.nidhish.GridCell;
+
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Queue;
@@ -23,6 +27,8 @@ public class GridCellPath {
 	this.globalGridCharsMatrix = globalGridCharsMatrix;
     }
 
+
+
     public void addCell(GridCell gridCell) {
 	gridCellList.add(gridCell);
     }
@@ -34,13 +40,17 @@ public class GridCellPath {
 	}
 
 	if (dictionary.isPrefixForWords(potentialWord)) {
-	    List<GridCell> neighbors = findNeighbors();
+	    generateNewPaths();
+	}
+    }
 
-	    for (GridCell neighboringCell : neighbors) {
-	        GridCellPath newGridCellPathWithNeighbor = createNewGridCellPathWithNeighbor(neighboringCell);
+    protected void generateNewPaths() {
+	List<GridCell> neighbors = findNeighbors();
+
+	for (GridCell neighboringCell : neighbors) {
+	    GridCellPath newGridCellPathWithNeighbor = createNewGridCellPathWithNeighbor(neighboringCell);
 		//add the new path to the queue for processing
 		globalGridCellPaths.add(newGridCellPathWithNeighbor);
-	    }
 	}
     }
 

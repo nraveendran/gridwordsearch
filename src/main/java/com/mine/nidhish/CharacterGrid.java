@@ -1,4 +1,8 @@
+package com.mine.nidhish;
+
 import java.util.*;
+
+
 
 /**
  * Created by nidhish on 5/29/15.
@@ -27,6 +31,12 @@ public class CharacterGrid {
 
     }
 
+    public CharacterGrid(int numberOfRows, int numberOfColumns, char[][] rowCharArray) {
+        this.numberOfRows = numberOfRows;
+        this.numberOfColumns = numberOfColumns;
+        this.gridCharsMatrix = rowCharArray;
+    }
+
     public int getNumberOfRows() {
 	return numberOfRows;
     }
@@ -39,16 +49,13 @@ public class CharacterGrid {
 	return gridCharsMatrix;
     }
 
-    public Set findWordMatchingDictionary(Dictionary dictionary) {
+    public Set<String> findWordMatchingDictionary(Dictionary dictionary) {
 
-        Set finalSetOfWords = new HashSet<String>();
-        StringBuilder stringBuilder = new StringBuilder();
+        Set finalSetOfWords = new TreeSet();
         for (int currentRowNumber = 0; currentRowNumber < getNumberOfRows(); currentRowNumber++) {
             for (int currentcolumnNumber = 0; currentcolumnNumber < getNumberOfColumns(); currentcolumnNumber++) {
 
-
                 finalSetOfWords.addAll(visitCellsUsingMessaging(currentRowNumber, currentcolumnNumber, dictionary));
-
             
             }
         }
@@ -66,6 +73,7 @@ public class CharacterGrid {
         GridCellPath gridCellPath = new GridCellPath(gridCellPathsToProcess,wordsSet,dictionary,gridCharsMatrix);
         GridCell gridCell = new GridCell(this, currentRowNumber,currentcolumnNumber);
         gridCellPath.addCell(gridCell);
+        gridCellPathsToProcess.add(gridCellPath);
 
 
         while (!gridCellPathsToProcess.isEmpty()){
