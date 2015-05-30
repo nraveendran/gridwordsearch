@@ -20,6 +20,7 @@ public class ConcurrentGridCellPath extends AbstractGridCellPath implements Call
 	ConcurrentGridCellPath newGridCellPathWithNeighbor = createNewGridCellPathWithNeighbor(neighboringCell);
 
 	jobSubmitter.addToQueue(newGridCellPathWithNeighbor);
+
     }
 
     protected ConcurrentGridCellPath createNewGridCellPathWithNeighbor(GridCell neighboringCell) {

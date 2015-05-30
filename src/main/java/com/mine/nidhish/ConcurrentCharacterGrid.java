@@ -1,9 +1,9 @@
 package com.mine.nidhish;
 
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.Queue;
 import java.util.Set;
-import java.util.Vector;
 import java.util.concurrent.*;
 
 /**
@@ -12,6 +12,8 @@ import java.util.concurrent.*;
 public class ConcurrentCharacterGrid extends CharacterGrid {
 
     private ExecutorService executorService;
+
+    ExecutorService singleThreadedExecutor = Executors.newSingleThreadExecutor();
 
     public ConcurrentCharacterGrid(int numberOfRows, int numberOfColumns, char[] allWordCharArray) {
 	super(numberOfRows, numberOfColumns, allWordCharArray);
@@ -30,6 +32,7 @@ public class ConcurrentCharacterGrid extends CharacterGrid {
     private Set<String> parallelProcessing(Dictionary dictionary) {
 	executorService = Executors.newFixedThreadPool(25);
 	JobSubmitter jobSubmitCallBack = new JobSubmitter();
+	singleThreadedExecutor.submit(jobSubmitCallBack);
 	Set<String> finalSetOfWords = new ConcurrentSkipListSet<>();
 
 	for (int currentRowNumber = 0; currentRowNumber < getNumberOfRows(); currentRowNumber++) {
@@ -40,14 +43,19 @@ public class ConcurrentCharacterGrid extends CharacterGrid {
 				gridCharsMatrix);
 		GridCell gridCell = new GridCell(this, currentRowNumber, currentcolumnNumber);
 		concurrentGridCellPath.addCell(gridCell);
-		concurrentGridCellPath.matchAndGenerateNewPaths();
+		jobSubmitCallBack.addToQueue(concurrentGridCellPath);
+
 	    }
 	}
 
+
 	jobSubmitCallBack.waitForAllTasksToComplete();
+	singleThreadedExecutor.shutdown();
 	executorService.shutdown();
 
-	waitForShutDown(executorService);
+        waitForShutDown(singleThreadedExecutor);
+
+        waitForShutDown(executorService);
 
 	System.out.println("shutting down pools");
 
@@ -55,7 +63,7 @@ public class ConcurrentCharacterGrid extends CharacterGrid {
     }
 
     private void waitForShutDown(ExecutorService executorService) {
-	while (!executorService.isShutdown()) {
+	while (!executorService.isShutdown()){
 	    try {
 		Thread.sleep(10);
 	    } catch (InterruptedException e) {
@@ -64,30 +72,36 @@ public class ConcurrentCharacterGrid extends CharacterGrid {
 	}
     }
 
-    class JobSubmitter {
+    class JobSubmitter implements Runnable {
 
-	Vector<Future> submittedTasks;
-	int numJobsSubmitted;
-	int numJobsRemoved;
+	Queue<Callable> jobsToSubmit;
+	Queue<Future> submittedTasks;
+        boolean areJobsSubmitted;
 
 	public JobSubmitter() {
-	    this.submittedTasks = new Vector<>();
+	    this.jobsToSubmit = new LinkedList<>();
+	    this.submittedTasks = new LinkedList<>();
 	}
 
-	private void waitForAllTasksToComplete() {
+	@Override public void run() {
+	    while (!areJobsSubmitted);
 
-	    while (numJobsSubmitted <= 0)
-		;
+	    while (!jobsToSubmit.isEmpty()) {
+		Callable nextJob = jobsToSubmit.poll();
+		if (nextJob != null) {
+		    submittedTasks.add(executorService.submit(nextJob));
+		}
+	    }
+	}
+
+  	private void waitForAllTasksToComplete() {
 
 
 	    while (!submittedTasks.isEmpty()) {
-		Future task = submittedTasks.firstElement();
+		Future task = submittedTasks.poll();
 		try {
 
 		    task.get();
-
-		    submittedTasks.removeElementAt(0);
-		    numJobsRemoved++;
 		} catch (InterruptedException e) {
 		    e.printStackTrace();
 		} catch (ExecutionException e) {
@@ -95,14 +109,13 @@ public class ConcurrentCharacterGrid extends CharacterGrid {
 		}
 	    }
 
-	    System.out.println("all tasks done " + numJobsSubmitted + " submitted " + numJobsRemoved + " removed");
+	    System.out.println("all tasks done");
 
 	}
 
-	public synchronized void addToQueue(Callable nextJob) {
-	        Future future = executorService.submit(nextJob);
-	        submittedTasks.add(future);
-	        numJobsSubmitted++;
+	public void addToQueue(Callable newGridCellPathWithNeighbor) {
+	    jobsToSubmit.add(newGridCellPathWithNeighbor);
+	    areJobsSubmitted=true;
 	}
 
     }
