@@ -8,16 +8,16 @@ import java.util.Set;
 /**
  * Created by nidhish on 5/30/15.
  */
-public class AbstractGridCellPath {
+public abstract class AbstractGridCellPath {
     // These are references to global objects shared by all paths so that GridCellPath can add new paths directly
     protected final Set<String> globalWordSet;
     protected final Dictionary dictionary;
-    protected final char[][] globalGridCharsMatrix;Queue<GridCellPath> globalGridCellPathsToProcess;
+    protected final char[][] globalGridCharsMatrix;
+
     List<GridCell> gridCellList = new LinkedList<GridCell>();
 
-    public AbstractGridCellPath(Queue<GridCellPath> globalGridCellPathsToProcess, Set<String> wordsSet, Dictionary dictionary,
+    public AbstractGridCellPath(Set<String> wordsSet, Dictionary dictionary,
 		    char[][] globalGridCharsMatrix) {
-	this.globalGridCellPathsToProcess = globalGridCellPathsToProcess;
 	this.globalWordSet = wordsSet;
 	this.dictionary = dictionary;
 	this.globalGridCharsMatrix = globalGridCharsMatrix;
@@ -42,11 +42,13 @@ public class AbstractGridCellPath {
 	List<GridCell> neighbors = findNeighbors();
 
 	for (GridCell neighboringCell : neighbors) {
-	    GridCellPath newGridCellPathWithNeighbor = createNewGridCellPathWithNeighbor(neighboringCell);
-		//add the new path to the queue for processing
-		globalGridCellPathsToProcess.add(newGridCellPathWithNeighbor);
+
+	    processNewPathWithNeighbor(neighboringCell);
+
 	}
     }
+
+    abstract void processNewPathWithNeighbor(GridCell neighboringCell);
 
     protected List<GridCell> findNeighbors() {
 	//Get the last cell in the path
@@ -58,20 +60,13 @@ public class AbstractGridCellPath {
 	return neighbors;
     }
 
-    protected GridCellPath createNewGridCellPathWithNeighbor(GridCell neighboringCell) {
-	GridCellPath newGridCellPathWithNeighbor = new GridCellPath(globalGridCellPathsToProcess, globalWordSet, dictionary, globalGridCharsMatrix);
-	//the new path contains all the cells in the current path
-	newGridCellPathWithNeighbor.addCurrentPath(gridCellList);
-	//the new path contains the neighbor that we found
-        newGridCellPathWithNeighbor.addCell(neighboringCell);
-	return newGridCellPathWithNeighbor;
-    }
+
 
     protected GridCell getLastGridCell() {
 	return gridCellList.get(gridCellList.size() - 1);
     }
 
-    private void addCurrentPath(List<GridCell> gridCellList) {
+    protected void addCurrentPath(List<GridCell> gridCellList) {
 	this.gridCellList.addAll(gridCellList);
     }
 

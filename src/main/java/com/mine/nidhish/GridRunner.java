@@ -20,9 +20,9 @@ public class GridRunner {
 
     public static void main(String[] args) throws IOException {
 
-        InputStream dictionaryStream = getInputStreamForDictionary();
-        InputStream gridStream =  getInputStreamForGrid();
-	GridRunner gridRunner = new GridRunner(dictionaryStream,gridStream);
+	InputStream dictionaryStream = getInputStreamForDictionary();
+	InputStream gridStream = getInputStreamForGrid();
+	GridRunner gridRunner = new GridRunner(dictionaryStream, gridStream);
 	gridRunner.computeWords();
     }
 
@@ -40,33 +40,32 @@ public class GridRunner {
 
     public GridRunner(InputStream dictionaryStream, InputStream gridStream) {
 
-        this.dictionaryStream = dictionaryStream;
-        this.gridStream = gridStream;
+	this.dictionaryStream = dictionaryStream;
+	this.gridStream = gridStream;
 
     }
 
-    public void computeWords(){
-        //        System.out.println("Starting Grid Scanning ");
-        //        long startTime = System.currentTimeMillis();
+    public void computeWords() {
+//	System.out.println("Starting Grid Scanning ");
+	long startTime = System.currentTimeMillis();
 
-        loadDictionary();
+	loadDictionary();
 
-        CharacterGrid characterGrid = readCharacterGrid();
+	CharacterGrid characterGrid = readCharacterGrid();
 
-        Set<String> wordSet = characterGrid.findWordMatchingDictionary(dictionary);
+	Set<String> wordSet = characterGrid.findWordMatchingDictionary(dictionary);
 
-        System.out.println(wordSet.size());
-        for (String word : wordSet) {
+	System.out.println(wordSet.size());
+	for (String word : wordSet) {
 	    System.out.println(word);
-        }
+	}
 
-        //        System.out.println("Finish scanning character grid in " + (System.currentTimeMillis() - startTime) + " ms");
+//	System.out.println("Finish scanning character grid in " + (System.currentTimeMillis() - startTime) + " ms");
     }
 
     private CharacterGrid readCharacterGrid() {
 
-	//        System.out.println("Starting to read Grid ");
-	//
+//	System.out.println("Starting to read Grid ");
 	long startTime = System.currentTimeMillis();
 
 	try {
@@ -110,7 +109,14 @@ public class GridRunner {
 
 	    br.close();
 
-	    CharacterGrid characterGrid = new CharacterGrid(numberOfRows, numberOfColumns, rowCharArray);
+	    CharacterGrid characterGrid;
+	    String parallel = System.getProperty("parallel");
+	    if (parallel != null && parallel.equals("true")) {
+		characterGrid = new ConcurrentCharacterGrid(numberOfRows, numberOfColumns, rowCharArray);
+	    } else {
+		characterGrid = new CharacterGrid(numberOfRows, numberOfColumns, rowCharArray);
+	    }
+
 //	    System.out.println("Finish reading character grid in " + (System.currentTimeMillis() - startTime) + " ms");
 	    return characterGrid;
 	} catch (Exception ex) {
@@ -119,9 +125,9 @@ public class GridRunner {
 
     }
 
-
-
     private void loadDictionary() {
+	long startTime = System.currentTimeMillis();
+
 	try {
 	    dictionary = new Dictionary();
 
@@ -129,9 +135,7 @@ public class GridRunner {
 
 	    String word;
 
-	    //	System.out.println("Starting to load dictionary");
-
-	    long startTime = System.currentTimeMillis();
+	    System.out.println("Starting to load dictionary");
 
 	    while ((word = br.readLine()) != null) {
 		word = word.replaceAll("[^a-zA-Z]", "");
@@ -142,18 +146,18 @@ public class GridRunner {
 	    throw new RuntimeException(ex);
 	}
 
-	//	System.out.println("Loaded dictionary in " + (System.currentTimeMillis() - startTime) + " milliseconds");
+	System.out.println("Loaded dictionary in " + (System.currentTimeMillis() - startTime) + " milliseconds");
     }
 
     private static InputStream getInputStreamForDictionary() throws IOException {
 	String dictionaryFileName;
 	InputStream in;
 	if (System.getProperty("dictionaryFile") != null) {
-		dictionaryFileName = System.getProperty("dictionaryFile");
-		Path path = Paths.get(dictionaryFileName);
-		in = Files.newInputStream(path);
+	    dictionaryFileName = System.getProperty("dictionaryFile");
+	    Path path = Paths.get(dictionaryFileName);
+	    in = Files.newInputStream(path);
 	} else {
-		in = GridRunner.class.getClassLoader().getResourceAsStream("englishwords.txt");
+	    in = GridRunner.class.getClassLoader().getResourceAsStream("englishwords.txt");
 	}
 	return in;
     }

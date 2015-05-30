@@ -2,8 +2,6 @@ package com.mine.nidhish;
 
 import java.util.*;
 
-
-
 /**
  * Created by nidhish on 5/29/15.
  */
@@ -11,30 +9,30 @@ public class CharacterGrid {
     private final int numberOfRows;
     private final int numberOfColumns;
 
-    private char[][] gridCharsMatrix;
+    protected char[][] gridCharsMatrix;
 
-    public CharacterGrid(int numberOfRows, int numberOfColumns,char[] allWordCharArray) {
-        this.numberOfRows = numberOfRows;
-        this.numberOfColumns = numberOfColumns;
-        if (allWordCharArray.length!=numberOfRows * numberOfColumns){
-            throw new RuntimeException(numberOfRows* numberOfColumns + " characters expected. " + allWordCharArray.length + " provided");
-        }
-        this.gridCharsMatrix = new char[numberOfRows][numberOfColumns];
+    public CharacterGrid(int numberOfRows, int numberOfColumns, char[] allWordCharArray) {
+	this.numberOfRows = numberOfRows;
+	this.numberOfColumns = numberOfColumns;
+	if (allWordCharArray.length != numberOfRows * numberOfColumns) {
+	    throw new RuntimeException(numberOfRows * numberOfColumns + " characters expected. " + allWordCharArray.length + " provided");
+	}
+	this.gridCharsMatrix = new char[numberOfRows][numberOfColumns];
 
-        int allWordCharArrayIndex = 0;
+	int allWordCharArrayIndex = 0;
 
-        for (int rowNumber = 0;rowNumber<numberOfRows;rowNumber++){
-            for (int columnNumber = 0; columnNumber < numberOfColumns; columnNumber++) {
-                gridCharsMatrix[rowNumber][columnNumber] = Character.toLowerCase(allWordCharArray[allWordCharArrayIndex++]);
-            }
-        }
+	for (int rowNumber = 0; rowNumber < numberOfRows; rowNumber++) {
+	    for (int columnNumber = 0; columnNumber < numberOfColumns; columnNumber++) {
+		gridCharsMatrix[rowNumber][columnNumber] = Character.toLowerCase(allWordCharArray[allWordCharArrayIndex++]);
+	    }
+	}
 
     }
 
     public CharacterGrid(int numberOfRows, int numberOfColumns, char[][] rowCharArray) {
-        this.numberOfRows = numberOfRows;
-        this.numberOfColumns = numberOfColumns;
-        this.gridCharsMatrix = rowCharArray;
+	this.numberOfRows = numberOfRows;
+	this.numberOfColumns = numberOfColumns;
+	this.gridCharsMatrix = rowCharArray;
     }
 
     public int getNumberOfRows() {
@@ -51,41 +49,43 @@ public class CharacterGrid {
 
     public Set<String> findWordMatchingDictionary(Dictionary dictionary) {
 
-        Set finalSetOfWords = new TreeSet();
-        for (int currentRowNumber = 0; currentRowNumber < getNumberOfRows(); currentRowNumber++) {
-            for (int currentcolumnNumber = 0; currentcolumnNumber < getNumberOfColumns(); currentcolumnNumber++) {
+	return visitCellsSerially(dictionary);
 
-                finalSetOfWords.addAll(visitCellsUsingMessaging(currentRowNumber, currentcolumnNumber, dictionary));
-            
-            }
-        }
-        return finalSetOfWords;
     }
 
-    private Collection visitCellsUsingMessaging(int currentRowNumber, int currentcolumnNumber, Dictionary dictionary) {
-        
-        Set<String> wordsSet = new HashSet<String>();
-        
-        Queue<GridCellPath> gridCellPathsToProcess = new LinkedList<>();
+    private Set<String> visitCellsSerially(Dictionary dictionary) {
+	Set finalSetOfWords = new TreeSet();
+	for (int currentRowNumber = 0; currentRowNumber < getNumberOfRows(); currentRowNumber++) {
+	    for (int currentcolumnNumber = 0; currentcolumnNumber < getNumberOfColumns(); currentcolumnNumber++) {
 
+		finalSetOfWords.addAll(processPaths(currentRowNumber, currentcolumnNumber, dictionary));
 
-        //The initial path represented by gridCellPath which is just the inputted single cell
-        GridCellPath gridCellPath = new GridCellPath(gridCellPathsToProcess,wordsSet,dictionary,gridCharsMatrix);
-        GridCell gridCell = new GridCell(this, currentRowNumber,currentcolumnNumber);
-        gridCellPath.addCell(gridCell);
-        gridCellPathsToProcess.add(gridCellPath);
+	    }
+	}
+	return finalSetOfWords;
+    }
 
+    private Collection processPaths(int currentRowNumber, int currentcolumnNumber, Dictionary dictionary) {
 
-        while (!gridCellPathsToProcess.isEmpty()){
+	Set<String> wordsSet = new HashSet<String>();
 
-            GridCellPath currentGridCellPath = gridCellPathsToProcess.poll();
-            //this will check if the current path matches a word in dictionary
-            //if the current path matches a prefix in the dictionary, the gridCellPath will generate new paths based on its neighbors and submit them for processing
-            currentGridCellPath.matchAndGenerateNewPaths();
-        }
+	Queue<GridCellPath> gridCellPathsToProcess = new LinkedList<>();
 
+	//The initial path represented by gridCellPath which is just the inputted single cell
+	GridCellPath gridCellPath = new GridCellPath(gridCellPathsToProcess, wordsSet, dictionary, gridCharsMatrix);
+	GridCell gridCell = new GridCell(this, currentRowNumber, currentcolumnNumber);
+	gridCellPath.addCell(gridCell);
+	gridCellPathsToProcess.add(gridCellPath);
 
-        return wordsSet;
+	while (!gridCellPathsToProcess.isEmpty()) {
+
+	    GridCellPath currentGridCellPath = gridCellPathsToProcess.poll();
+	    //this will check if the current path matches a word in dictionary
+	    //if the current path matches a prefix in the dictionary, the gridCellPath will generate new paths based on its neighbors and submit them for processing
+	    currentGridCellPath.matchAndGenerateNewPaths();
+	}
+
+	return wordsSet;
     }
 
 }
