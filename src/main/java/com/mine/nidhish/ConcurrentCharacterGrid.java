@@ -50,6 +50,7 @@ public class ConcurrentCharacterGrid extends CharacterGrid {
 
 
 	jobSubmitCallBack.waitForAllTasksToComplete();
+
 	singleThreadedExecutor.shutdown();
 	executorService.shutdown();
 
@@ -63,6 +64,7 @@ public class ConcurrentCharacterGrid extends CharacterGrid {
     }
 
     private void waitForShutDown(ExecutorService executorService) {
+
 	while (!executorService.isShutdown()){
 	    try {
 		Thread.sleep(10);
@@ -76,7 +78,8 @@ public class ConcurrentCharacterGrid extends CharacterGrid {
 
 	Queue<Callable> jobsToSubmit;
 	Queue<Future> submittedTasks;
-        boolean areJobsSubmitted;
+        int numJobsSubmitted;
+        int numJobsFinished;
 
 	public JobSubmitter() {
 	    this.jobsToSubmit = new LinkedList<>();
@@ -84,24 +87,27 @@ public class ConcurrentCharacterGrid extends CharacterGrid {
 	}
 
 	@Override public void run() {
-	    while (!areJobsSubmitted);
+	    while (numJobsSubmitted<=0);
 
+	    System.out.println("polling queue for jobs");
 	    while (!jobsToSubmit.isEmpty()) {
 		Callable nextJob = jobsToSubmit.poll();
 		if (nextJob != null) {
 		    submittedTasks.add(executorService.submit(nextJob));
+		    numJobsSubmitted++;
 		}
 	    }
 	}
 
   	private void waitForAllTasksToComplete() {
 
-
+	    System.out.println("checking for status of submitted jobs");
 	    while (!submittedTasks.isEmpty()) {
 		Future task = submittedTasks.poll();
 		try {
 
 		    task.get();
+		    numJobsFinished++;
 		} catch (InterruptedException e) {
 		    e.printStackTrace();
 		} catch (ExecutionException e) {
@@ -109,13 +115,14 @@ public class ConcurrentCharacterGrid extends CharacterGrid {
 		}
 	    }
 
-	    System.out.println("all tasks done");
+	    System.out.println("all tasks done with " + numJobsSubmitted + " jobs submitted and " + numJobsFinished +  " finished");
+
 
 	}
 
 	public void addToQueue(Callable newGridCellPathWithNeighbor) {
 	    jobsToSubmit.add(newGridCellPathWithNeighbor);
-	    areJobsSubmitted=true;
+	    numJobsSubmitted++;
 	}
 
     }
